@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第七夜论坛</title>
+<style>
+  :root {
+    --bg: #0b0e14;
+    --panel: #121722;
+    --border: #2a3140;
+    --text: #b8c4d4;
+    --text-bright: #e6edf7;
+    --accent: #4f7ca8;
+    --accent2: #3a5f82;
+    --danger: #8a3a3a;
+    --warn: #a8823a;
+    --font-mono: "Courier New", monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 0 10px 40px;
+  }
+
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { color: var(--text-bright); text-decoration: underline; }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  header {
+    text-align: center;
+    padding: 30px 0 10px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+  }
+
+  header h1 {
+    font-size: 28px;
+    color: var(--text-bright);
+    letter-spacing: 2px;
+    font-weight: normal;
+    text-shadow: 0 0 10px rgba(79,124,168,0.4);
+  }
+
+  header .sub {
+    font-size: 12px;
+    color: #5a6b7f;
+    margin-top: 5px;
+  }
+
+  .search-box {
+    display: flex;
+    gap: 8px;
+    margin: 20px 0;
+  }
+
+  .search-box input {
+    flex: 1;
+    background: #0f1420;
+    border: 1px solid var(--border);
+    color: var(--text-bright);
+    padding: 8px 12px;
+    font-size: 14px;
+    outline: none;
+  }
+
+  .search-box input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 5px rgba(79,124,168,0.3);
+  }
+
+  .search-box button {
+    background: var(--accent2);
+    border: none;
+    color: #fff;
+    padding: 8px 18px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  .search-box button:hover {
+    background: var(--accent);
+  }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    margin-bottom: 18px;
+    padding: 16px;
+  }
+
+  .panel h2 {
+    font-size: 16px;
+    color: var(--text-bright);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+    font-weight: normal;
+  }
+
+  .announcement {
+    margin-bottom: 8px;
+    font-size: 13px;
+  }
+
+  .announcement .tag {
+    display: inline-block;
+    background: #3a2a2a;
+    color: #d8a0a0;
+    padding: 0 6px;
+    margin-right: 6px;
+    font-size: 11px;
+    border: 1px solid #5a3a3a;
+  }
+
+  .region {
+    margin-bottom: 14px;
+  }
+
+  .region-title {
+    font-size: 15px;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+
+  .region-desc {
+    font-size: 12px;
+    color: #6a7b8f;
+    margin-bottom: 8px;
+  }
+
+  .board-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 8px;
+  }
+
+  .board-item {
+    background: #0f1420;
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+
+  .board-item:hover {
+    border-color: var(--accent);
+  }
+
+  .board-name {
+    font-size: 14px;
+    color: var(--text-bright);
+  }
+
+  .board-desc {
+    font-size: 12px;
+    color: #6a7b8f;
+    margin-top: 2px;
+  }
+
+  .post-item {
+    background: #0f1420;
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    cursor: pointer;
+  }
+
+  .post-item:hover {
+    border-color: var(--accent);
+  }
+
+  .post-title {
+    font-size: 14px;
+    color: var(--text-bright);
+  }
+
+  .post-meta {
+    font-size: 12px;
+    color: #6a7b8f;
+    margin-top: 4px;
+  }
+
+  .post-meta .author { color: #8aaccc; }
+  .post-meta .date { margin-left: 8px; }
+  .post-meta .hot { color: var(--danger); margin-left: 8px; }
+
+  .post-detail .post-header {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 10px;
+    margin-bottom: 12px;
+  }
+
+  .post-detail .post-title {
+    font-size: 18px;
+    color: var(--text-bright);
+  }
+
+  .post-detail .post-content {
+    white-space: pre-wrap;
+    margin: 12px 0;
+    font-size: 14px;
+  }
+
+  .post-detail img {
+    max-width: 100%;
+    border: 1px solid var(--border);
+    margin: 10px 0;
+  }
+
+  .comments {
+    margin-top: 16px;
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+  }
+
+  .comment {
+    background: #0f1420;
+    border: 1px solid #1e2635;
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    font-size: 13px;
+  }
+
+  .comment .user {
+    color: #8aaccc;
+    margin-right: 6px;
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-bottom: 12px;
+    color: var(--accent);
+    cursor: pointer;
+  }
+
+  .back-link:hover { text-decoration: underline; }
+
+  .notice {
+    color: var(--warn);
+    font-size: 13px;
+    border: 1px dashed var(--warn);
+    padding: 8px;
+    margin: 8px 0;
+  }
+
+  .locked {
+    color: var(--danger);
+  }
+
+  .glitch {
+    animation: glitch 0.3s infinite;
+  }
+
+  @keyframes glitch {
+    0% { transform: translate(0, 0); }
+    20% { transform: translate(-2px, 1px); }
+    40% { transform: translate(2px, -1px); }
+    60% { transform: translate(-1px, -1px); }
+    80% { transform: translate(1px, 2px); }
+    100% { transform: translate(0, 0); }
+  }
+
+  .search-result {
+    background: #0f1420;
+    border: 1px solid var(--border);
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+
+  .search-result h3 {
+    color: var(--text-bright);
+    font-size: 15px;
+    margin-bottom: 6px;
+  }
+
+  .search-result .refs {
+    font-size: 12px;
+    color: #5a6b7f;
+    margin-top: 8px;
+  }
+
+  footer {
+    text-align: center;
+    margin-top: 30px;
+    color: #4a5b6f;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>第七夜论坛</h1>
+    <div class="sub">地方旧闻 · 民间怪谈 · 考古异事</div>
+  </header>
+
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="搜索帖子、关键词、百科...（试试：镇水圭、玄阴镜、水边阴风）">
+    <button id="searchBtn">搜索</button>
+  </div>
+
+  <div id="content">
+    <!-- 动态内容 -->
+  </div>
+
+  <footer>
+    第七夜论坛 · 本站内容纯属虚构 · 请勿深究
+  </footer>
+</div>
+
+<script src="data.js"></script>
+<script>
+  // 确保 data.js 中的全局变量可用
+  const {
+    REGIONS, BOARD_REAL_POSTS, POSTS, FILLER, SEARCH_DB,
+    ANNOUNCEMENTS, USERS, HIDDEN_BOARD
+  } = window;
+
+  const content = document.getElementById('content');
+  const searchInput = document.getElementById('searchInput');
+  const searchBtn = document.getElementById('searchBtn');
+
+  // ========== 工具函数 ==========
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, function(m) {
+      return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m];
+    });
+  }
+
+  function getBoardName(boardId) {
+    for (let region of REGIONS) {
+      for (let board of region.boards) {
+        if (board.id === boardId) return board.name;
+      }
+    }
+    if (HIDDEN_BOARD.id === boardId) return HIDDEN_BOARD.name;
+    return boardId;
+  }
+
+  function getBoardDesc(boardId) {
+    for (let region of REGIONS) {
+      for (let board of region.boards) {
+        if (board.id === boardId) return board.desc;
+      }
+    }
+    if (HIDDEN_BOARD.id === boardId) return HIDDEN_BOARD.desc;
+    return '';
+  }
+
+  function getPostList(boardId) {
+    const realIds = BOARD_REAL_POSTS[boardId] || [];
+    const realPosts = realIds.map(id => POSTS[id]).filter(Boolean);
+    // filler
+    let fillerPosts = [];
+    if (FILLER[boardId]) {
+      fillerPosts = FILLER[boardId].map((f, idx) => ({
+        id: `filler-${boardId}-${idx}`,
+        title: f[0],
+        author: f[1],
+        date: f[2],
+        clickable: false,  // filler 帖子不可点击详情
+        isFiller: true
+      }));
+    }
+    return [...realPosts, ...fillerPosts];
+  }
+
+  function renderPostList(postList, boardId) {
+    if (!postList.length) {
+      return '<div class="notice">此版块暂无帖子。</div>';
+    }
+    let html = '';
+    for (let post of postList) {
+      const clickable = post.clickable !== false;
+      const hot = post.hot ? ' <span class="hot">[热]</span>' : '';
+      const locked = post.locked ? ' <span class="locked">[锁定]</span>' : '';
+      html += `
+        <div class="post-item" data-post-id="${escapeHtml(post.id)}" data-clickable="${clickable}">
+          <div class="post-title">${escapeHtml(post.title)}${hot}${locked}</div>
+          <div class="post-meta">
+            <span class="author">${escapeHtml(post.author)}</span>
+            <span class="date">${escapeHtml(post.date)}</span>
+          </div>
+        </div>`;
+    }
+    return html;
+  }
+
+  // ========== 渲染首页 ==========
+  function renderHome() {
+    let html = '';
+    // 公告
+    html += '<div class="panel"><h2>公告</h2>';
+    for (let ann of ANNOUNCEMENTS) {
+      html += `
+        <div class="announcement">
+          <span class="tag">${escapeHtml(ann.tag)}</span>
+          <strong>${escapeHtml(ann.title)}</strong>
+          <div style="margin-top:4px;white-space:pre-wrap;">${escapeHtml(ann.content)}</div>
+        </div>`;
+    }
+    html += '</div>';
+
+    // 分区
+    for (let region of REGIONS) {
+      html += `<div class="region"><div class="region-title">${escapeHtml(region.name)}</div>`;
+      if (region.desc) html += `<div class="region-desc">${escapeHtml(region.desc)}</div>`;
+      html += '<div class="board-list">';
+      for (let board of region.boards) {
+        html += `
+          <div class="board-item" data-board-id="${escapeHtml(board.id)}">
+            <div class="board-name">${escapeHtml(board.name)}</div>
+            <div class="board-desc">${escapeHtml(board.desc || '')}</div>
+          </div>`;
+      }
+      html += '</div></div>';
+    }
+    content.innerHTML = html;
+    attachHomeEvents();
+  }
+
+  function attachHomeEvents() {
+    document.querySelectorAll('.board-item').forEach(el => {
+      el.addEventListener('click', () => {
+        const boardId = el.dataset.boardId;
+        renderBoard(boardId);
+      });
+    });
+  }
+
+  // ========== 渲染版块帖子列表 ==========
+  function renderBoard(boardId) {
+    const boardName = getBoardName(boardId);
+    const boardDesc = getBoardDesc(boardId);
+    const postList = getPostList(boardId);
+    let html = `
+      <div class="back-link" onclick="renderHome()">← 返回首页</div>
+      <div class="panel">
+        <h2>${escapeHtml(boardName)}</h2>
+        <div style="font-size:12px;color:#6a7b8f;margin-bottom:10px;">${escapeHtml(boardDesc || '')}</div>
+        ${renderPostList(postList, boardId)}
+      </div>`;
+    content.innerHTML = html;
+    attachPostListEvents();
+  }
+
+  function attachPostListEvents() {
+    document.querySelectorAll('.post-item').forEach(el => {
+      el.addEventListener('click', () => {
+        const postId = el.dataset.postId;
+        const clickable = el.dataset.clickable === 'true';
+        if (clickable) {
+          renderPostDetail(postId);
+        } else {
+          alert('该帖为填充内容，无详情。');
+        }
+      });
+    });
+  }
+
+  // ========== 渲染帖子详情 ==========
+  function renderPostDetail(postId) {
+    const post = POSTS[postId];
+    if (!post) {
+      content.innerHTML = '<div class="panel">帖子不存在或已删除。</div>';
+      return;
+    }
+
+    let html = `<div class="back-link" onclick="renderBoard('${escapeHtml(post.board || 'qsjl')}')">← 返回版块</div>`;
+    html += '<div class="panel post-detail">';
+    html += `<div class="post-header">
+      <div class="post-title">${escapeHtml(post.title)}</div>
+      <div class="post-meta">
+        <span class="author">${escapeHtml(post.author)}</span>
+        <span class="date">${escapeHtml(post.date)}</span>
+        ${post.hot ? '<span class="hot">[热帖]</span>' : ''}
+        ${post.locked ? '<span class="locked">[锁定]</span>' : ''}
+      </div>
+    </div>`;
+
+    // 特殊效果
+    if (post.redEffect || post.glitchOnOpen) {
+      html += '<div class="notice" style="border-color:#8a3a3a;color:#d8a0a0;">⚠ 检测到异常数据 ⚠</div>';
+    }
+
+    if (post.img) {
+      html += `<img src="${escapeHtml(post.img)}" alt="帖子图片">`;
+    }
+
+    html += `<div class="post-content">${escapeHtml(post.content || '')}</div>`;
+
+    // 评论
+    if (post.commentsClosed) {
+      html += '<div class="notice">评论已关闭。</div>';
+    } else if (post.comments && post.comments.length) {
+      html += '<div class="comments"><h3>回复</h3>';
+      for (let c of post.comments) {
+        html += `<div class="comment"><span class="user">${escapeHtml(c.user)}</span> ${escapeHtml(c.text)}</div>`;
+      }
+      html += '</div>';
+    } else {
+      html += '<div class="comments"><h3>暂无回复</h3></div>';
+    }
+
+    html += '</div>';
+    content.innerHTML = html;
+    // 如果帖子有 glitch 效果
+    if (post.glitchOnOpen) {
+      content.querySelector('.panel').classList.add('glitch');
+      setTimeout(() => content.querySelector('.panel').classList.remove('glitch'), 1500);
+    }
+  }
+
+  // ========== 搜索 ==========
+  function performSearch() {
+    const query = searchInput.value.trim();
+    if (!query) return;
+    const entry = SEARCH_DB[query];
+    if (!entry) {
+      content.innerHTML = `<div class="panel">没有找到与“${escapeHtml(query)}”相关的内容。</div>`;
+      return;
+    }
+
+    let html = `<div class="back-link" onclick="renderHome()">← 返回首页</div>`;
+    html += '<div class="panel"><h2>搜索结果</h2>';
+
+    if (entry.type === 'post') {
+      const post = POSTS[entry.ref];
+      if (post) {
+        html += `<div class="search-result">
+          <h3>${escapeHtml(post.title)}</h3>
+          <div class="post-meta"><span class="author">${escapeHtml(post.author)}</span> <span class="date">${escapeHtml(post.date)}</span></div>
+          <div style="margin-top:8px;"><a href="#" onclick="renderPostDetail('${escapeHtml(post.id)}');return false;">查看帖子</a></div>
+        </div>`;
+      }
+    } else if (entry.type === 'baike') {
+      html += `<div class="search-result">
+        <h3>${escapeHtml(entry.title)}</h3>
+        <div style="white-space:pre-wrap;">${escapeHtml(entry.content)}</div>`;
+      if (entry.refs) {
+        html += `<div class="refs">参考：${entry.refs.map(r=>escapeHtml(r)).join('；')}</div>`;
+      }
+      html += `</div>`;
+    } else if (entry.type === 'profile') {
+      const user = USERS[entry.user];
+      if (user) {
+        html += `<div class="search-result">
+          <h3>用户：${escapeHtml(entry.user)}</h3>
+          <div>${escapeHtml(user.displayNote || '')}</div>
+          <div style="margin-top:6px;">公开帖子：${user.posts.map(p=>`<a href="#" onclick="renderPostDetail('${escapeHtml(p.ref)}');return false;">${escapeHtml(POSTS[p.ref]?.title || p.ref)}</a>`).join('、')}</div>
+        </div>`;
+      }
+    } else if (entry.type === 'effect') {
+      // 触发特效
+      if (entry.effect === 'shakeBlack') {
+        document.body.style.animation = 'glitch 0.2s infinite';
+        setTimeout(() => document.body.style.animation = '', 2000);
+        html += `<div class="search-result"><h3>你惊动了什么...</h3><div class="notice">屏幕开始颤抖，你感到一阵寒意。</div></div>`;
+      } else if (entry.effect === 'countdown') {
+        html += `<div class="search-result"><h3>第九夜倒计时</h3><div style="font-size:24px;color:#8a3a3a;">🕯️ 它越来越近了...</div></div>`;
+      }
+    } else if (entry.type === 'revealBoard') {
+      // 显示隐藏版块
+      html += `<div class="search-result">
+        <h3>隐藏版块：${escapeHtml(HIDDEN_BOARD.name)}</h3>
+        <div>${escapeHtml(HIDDEN_BOARD.desc)}</div>
+        <div style="margin-top:8px;"><a href="#" onclick="renderBoard('${escapeHtml(HIDDEN_BOARD.id)}');return false;">进入版块</a></div>
+      </div>`;
+    }
+
+    html += '</div>';
+    content.innerHTML = html;
+  }
+
+  searchBtn.addEventListener('click', performSearch);
+  searchInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') performSearch();
+  });
+
+  // ========== 启动 ==========
+  renderHome();
+</script>
+</body>
+</html>
